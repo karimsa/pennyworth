@@ -7,9 +7,11 @@
 
 'use strict';
 
-var flatten = require('underscore').flatten,
-    BayesClassifier = require('natural').BayesClassifier,
-    punc = ['.', ',', '!', '?'],
+import 'babel/polyfill';
+import { flatten } from 'underscore';
+import { BayesClassifier } from 'natural';
+
+var punc = ['.', ',', '!', '?'],
     split = function*(text) {
         var tmp;
         for (var word of text.split(/\s+/g)) {
@@ -86,7 +88,13 @@ var flatten = require('underscore').flatten,
                     }
 
                     // directive name
-                    word = word.substr(1).replace(new RegExp('[' + punc.join('') + ']', 'g'), '');
+                    word = word.substr(1);
+                    
+                    // see if more than just brackets
+                    if (word[word.length - 2] === ']') {
+                        iterator.next(word[word.length - 1]);
+                        word = word.substr(0, word.length - 1);
+                    }
 
                     // create arguments list
                     var args = [],
@@ -281,4 +289,4 @@ var flatten = require('underscore').flatten,
     };
 
 // export
-module.exports = pennyworth;
+export default pennyworth;

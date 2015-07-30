@@ -1,0 +1,35 @@
+{
+  "name": "pennyworth",
+  "version": "0.0.1",
+  "description": "a natural language templating engine for alfred",
+  "main": "pennyworth-dist.js",
+  "dependencies": {
+    "babel": "^5.8.19",
+    "natural": "^0.2.1",
+    "underscore": "^1.8.3"
+  },
+  "scripts": {
+    "test": "mocha --compilers js:mocha-babel test/test-*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karimsa/pennyworth.git"
+  },
+  "keywords": [
+    "natural",
+    "language",
+    "templating"
+  ],
+  "author": "Karim Alibhai",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/karimsa/pennyworth/issues"
+  },
+  "homepage": "https://github.com/karimsa/pennyworth#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.1.0",
+    "gulp-mocha": "^2.1.3",
+    "should": "^7.0.2"
+  }
+}

@@ -49,7 +49,7 @@ pennyworth.filter('my-new-filter', function ( input ) {
 });
 
 var template = pennyworth.template('hello, $who:my-new-filter.');
-template('hello, alfred.').who === 'alfred!';
+template('hello, alfred.').who === 'alfred!'; // true
 ```
 
 ### directives
@@ -63,10 +63,25 @@ template: `[... hello, hey, hi], $who.`
 Adding a new directive:
 
 ```javascript
-pennyworth.directive('my-directive', function ( arg1, arg2 ) {
-	return arg1 + ', ' + arg2;
+var pennyworth = require('./');
+var assert = require('assert');
+
+pennyworth.directive('greetings', function (args) {
+	return ['hey', 'hi', 'hello'].map(function (greeting) {
+		return {
+			type: 'text',
+			value: greeting
+		};
+	});
 });
 
-var template = pennyworth.template('[my-directive hello, world]');
+// should pass
+assert.deepEqual(pennyworth.flatten(
+	pennyworth.parse(
+		pennyworth.lex(
+			'[greetings], $test.'
+		)
+	)
+), ['hey', 'hi', 'hello']);
 // ...
 ```
