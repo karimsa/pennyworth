@@ -9,7 +9,7 @@
     "underscore": "^1.8.3"
   },
   "scripts": {
-    "test": "mocha --compilers js:mocha-babel test/test-*.js"
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
