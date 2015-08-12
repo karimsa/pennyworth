@@ -89,32 +89,34 @@ var punc = ['.', ',', '!', '?'],
 
                     // directive name
                     word = word.substr(1);
-                    
+
                     // see if more than just brackets
-                    if (word[word.length - 2] === ']') {
-                        iterator.next(word[word.length - 1]);
-                        word = word.substr(0, word.length - 1);
+                    if (word.indexOf(']') !== -1) {
+                        iterator.next(word.substr(1 + word.indexOf(']')));
+                        word = word.substr(0, word.indexOf(']'));
                     }
 
-                    // create arguments list
-                    var args = [],
-                        _tmp;
-
                     if (word[word.length - 1] !== ']') {
-                        // get next argument
-                        var text = '';
+                      // create arguments list
+                      var args = [],
+                          _tmp,
+                          text = '';
+
                         do {
                             _tmp = iterator.next().value;
                             if (!_tmp) break;
-                            
+
                             if (_tmp.indexOf(']') === -1) {
                                 text += _tmp + ' ';
                             } else {
                                 text += _tmp.substr(0, _tmp.indexOf(']'));
-                                iterator.next(_tmp.substr(1 + _tmp.indexOf(']')));
+
+                                if (_tmp.substr(1 + _tmp.indexOf(']'))) {
+                                  iterator.next(_tmp.substr(1 + _tmp.indexOf(']')));
+                                }
                             }
                         } while (_tmp.indexOf(']') === -1);
-                        
+
                         args = text.split(',').map((arg) => arg.trim());
                     } else word = word.substr(0, word.length - 1);
 
@@ -170,10 +172,10 @@ var punc = ['.', ',', '!', '?'],
 
             return tokens;
         },
-        
+
         parse: (lex) => {
             var tmp;
-            
+
             for (var i = 0; i < lex.length; i += 1) {
                 if (lex[i].type === 'directive') {
                     tmp = pennyworth.directive(lex[i].value, lex[i].args);
@@ -182,10 +184,10 @@ var punc = ['.', ',', '!', '?'],
                     );
                 }
             }
-            
+
             return [lex];
         },
-        
+
         flatten: (lex) => {
             return lex.map((_lex) =>
                 flatten(_lex)
@@ -195,7 +197,7 @@ var punc = ['.', ',', '!', '?'],
                     .trim()
             );
         },
-        
+
         _directives: {
             '...': (args) => args.map((text) => {
                 return {
@@ -204,35 +206,40 @@ var punc = ['.', ',', '!', '?'],
                 };
              })
         },
-        
+
         directive: (name, options) => {
             if (typeof options === 'function') pennyworth._directives[name] = options;
             else return (pennyworth._directives[name] || ((arg) => arg)).call(null, options);
         },
-        
+
         _filters: {
             'string': (text) => String(text),
             'int': (text) => parseInt(text, 10),
             'float': (text) => parseFloat(text)
         },
-        
+
         filter: (name, options) => {
             if (typeof options === 'function') pennyworth._filters[name] = options;
             else return (pennyworth._filters[name] || ((arg) => arg)).call(null, options);
         },
-        
+
         template: (text) => {
+            // remove apostrophes to stop clog
+            text = text.split('\'').join('');
+
             var tpl = pennyworth
                         .parse(pennyworth.lex(text))
                         .map((array) => flatten(array)),
                 classifier = new LogisticRegressionClassifier();
-            
+
             if (tpl.length !== 0) {
                 // load the classifier
                 pennyworth
                     .flatten(tpl)
+
+                    // add each flattened command as a document
                     .forEach((text, index) => classifier.addDocument(text, String(index)));
-            
+
                 // train the classifier
                 classifier.train();
             } else {
@@ -244,16 +251,19 @@ var punc = ['.', ',', '!', '?'],
             }
 
             return (data) => {
+                // clean up apostrophes for input as well
+                data = data.split('\'').join('');
+
                 // get appropriate text
                 var index = parseInt(classifier.classify(data), 10);
-                
+
                 // grab appropriate lex
                 var lex = tpl[index]
                             .filter((token) => token.type !== 'punctuation');
-                
+
                 // create a scope to store data
                 var scope = {};
-                
+
                 // parse out variables
                 for (var i = 0; i < lex.length; i += 1) {
                     if (lex[i].type === 'variable') {
@@ -261,12 +271,12 @@ var punc = ['.', ',', '!', '?'],
                         var prev;
                         if (i === 0) prev = 0;
                         else prev = data.indexOf(lex[i - 1].value) + lex[i - 1].value.length;
-                        
+
                         // grab next index
                         var next;
                         if (i === (lex.length - 1)) next = data.length;
                         else next = data.indexOf(lex[i + 1].value, prev) - prev;
-                        
+
                         // grab data
                         scope[lex[i].value] =
                             data
@@ -281,6 +291,7 @@ var punc = ['.', ',', '!', '?'],
                         data = data.substr(prev + next);
                     }
                 }
+
                 // return our created scope
                 return scope;
             };

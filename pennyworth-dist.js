@@ -175,18 +175,17 @@ var punc = ['.', ',', '!', '?'],
                     word = word.substr(1);
 
                     // see if more than just brackets
-                    if (word[word.length - 2] === ']') {
-                        iterator.next(word[word.length - 1]);
-                        word = word.substr(0, word.length - 1);
+                    if (word.indexOf(']') !== -1) {
+                        iterator.next(word.substr(1 + word.indexOf(']')));
+                        word = word.substr(0, word.indexOf(']'));
                     }
 
-                    // create arguments list
-                    var args = [],
-                        _tmp;
-
                     if (word[word.length - 1] !== ']') {
-                        // get next argument
-                        var text = '';
+                        // create arguments list
+                        var args = [],
+                            _tmp,
+                            text = '';
+
                         do {
                             _tmp = iterator.next().value;
                             if (!_tmp) break;
@@ -195,7 +194,10 @@ var punc = ['.', ',', '!', '?'],
                                 text += _tmp + ' ';
                             } else {
                                 text += _tmp.substr(0, _tmp.indexOf(']'));
-                                iterator.next(_tmp.substr(1 + _tmp.indexOf(']')));
+
+                                if (_tmp.substr(1 + _tmp.indexOf(']'))) {
+                                    iterator.next(_tmp.substr(1 + _tmp.indexOf(']')));
+                                }
                             }
                         } while (_tmp.indexOf(']') === -1);
 
@@ -332,6 +334,9 @@ var punc = ['.', ',', '!', '?'],
     },
 
     template: function template(text) {
+        // remove apostrophes to stop clog
+        text = text.split('\'').join('');
+
         var tpl = pennyworth.parse(pennyworth.lex(text)).map(function (array) {
             return (0, _underscore.flatten)(array);
         }),
@@ -339,7 +344,10 @@ var punc = ['.', ',', '!', '?'],
 
         if (tpl.length !== 0) {
             // load the classifier
-            pennyworth.flatten(tpl).forEach(function (text, index) {
+            pennyworth.flatten(tpl)
+
+            // add each flattened command as a document
+            .forEach(function (text, index) {
                 return classifier.addDocument(text, String(index));
             });
 
@@ -354,6 +362,9 @@ var punc = ['.', ',', '!', '?'],
         }
 
         return function (data) {
+            // clean up apostrophes for input as well
+            data = data.split('\'').join('');
+
             // get appropriate text
             var index = parseInt(classifier.classify(data), 10);
 
@@ -386,6 +397,7 @@ var punc = ['.', ',', '!', '?'],
                     data = data.substr(prev + next);
                 }
             }
+
             // return our created scope
             return scope;
         };
