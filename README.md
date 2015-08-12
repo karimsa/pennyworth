@@ -1,4 +1,4 @@
-# pennyworth [![Build Status](https://magnum.travis-ci.com/karimsa/pennyworth.svg?token=bynzkcTP4XciV8soPs5e&branch=master)](https://magnum.travis-ci.com/karimsa/pennyworth)
+# pennyworth [![Build Status](https://travis-ci.org/karimsa/pennyworth.svg)](https://travis-ci.org/karimsa/pennyworth)
 
 a natural language templating engine for [alfred](https://github.com/karimsa/alfred).
 
