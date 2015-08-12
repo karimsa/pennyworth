@@ -270,6 +270,13 @@ var punc = ['.', ',', '!', '?'],
             }
         }
 
+        if (tmp) {
+            tokens.push({
+                type: 'text',
+                value: tmp.trim()
+            });
+        }
+
         return tokens;
     },
 

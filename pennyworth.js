@@ -170,6 +170,14 @@ var punc = ['.', ',', '!', '?'],
                 }
             }
 
+            // add remaining text
+            if (tmp) {
+                tokens.push({
+                    type: 'text',
+                    value: tmp.trim()
+                });
+            }
+
             return tokens;
         },
 
