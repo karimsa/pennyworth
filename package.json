@@ -4,6 +4,7 @@
   "description": "a natural language templating engine for alfred",
   "main": "pennyworth-dist.js",
   "dependencies": {
+    "babel": "^5.8.19",
     "natural": "^0.2.1",
     "underscore": "^1.8.3"
   },
@@ -28,7 +29,6 @@
   },
   "homepage": "https://github.com/karimsa/pennyworth#readme",
   "devDependencies": {
-    "babel": "^5.8.19",
     "gulp": "^3.9.0",
     "gulp-babel": "^5.1.0",
     "gulp-mocha": "^2.1.3",
