@@ -1,6 +1,6 @@
 {
   "name": "pennyworth",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "a natural language templating engine for alfred",
   "main": "pennyworth-dist.js",
   "dependencies": {
