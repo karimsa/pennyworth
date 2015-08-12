@@ -1,4 +1,4 @@
-# pennyworth
+# pennyworth [![Build Status](https://magnum.travis-ci.com/karimsa/pennyworth.svg?token=bynzkcTP4XciV8soPs5e&branch=master)](https://magnum.travis-ci.com/karimsa/pennyworth)
 
 a natural language templating engine for alfred.
 
@@ -6,11 +6,11 @@ a natural language templating engine for alfred.
 
 ```javascript
 // build a template from a template string
-var template = pennyworth.template('my special template.');
+var template = pennyworth.template('my beautiful template.');
 
 // the template is a function that can be called with data at
 // any time and multiple times
-var compiled = template('my data.');
+var compiled = template('my input string.');
 ```
 
 ## spec
@@ -58,14 +58,11 @@ template('hello, alfred.').who === 'alfred!'; // true
 
 template: `[... hello, hey, hi], $who.`
 
-*expands to catch `hello, $who`, `hey, $who`, and `hi, $who`*
+*expands to `hello, $who`, `hey, $who`, and `hi, $who`*
 
 Adding a new directive:
 
 ```javascript
-var pennyworth = require('./');
-var assert = require('assert');
-
 pennyworth.directive('greetings', function (args) {
 	return ['hey', 'hi', 'hello'].map(function (greeting) {
 		return {
@@ -75,13 +72,6 @@ pennyworth.directive('greetings', function (args) {
 	});
 });
 
-// should pass
-assert.deepEqual(pennyworth.flatten(
-	pennyworth.parse(
-		pennyworth.lex(
-			'[greetings], $test.'
-		)
-	)
-), ['hey', 'hi', 'hello']);
-// ...
+var template = pennyworth.template('[greetings], $who.');
+template('hi, alfred').who === 'alfred'; // true
 ```
