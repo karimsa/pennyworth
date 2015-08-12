@@ -186,20 +186,22 @@ var punc = ['.', ',', '!', '?'],
 
                     if (word[word.length - 1] !== ']') {
                         // get next argument
+                        var text = '';
                         do {
                             _tmp = iterator.next().value;
                             if (!_tmp) break;
 
-                            if (_tmp.indexOf(']') !== -1) {
-                                args.push(_tmp.substr(0, _tmp.indexOf(']')).replace(',', ''));
-
-                                if (_tmp[_tmp.length - 1] !== ']') {
-                                    iterator.next(_tmp.substr(_tmp.indexOf(']') + 1));
-                                }
+                            if (_tmp.indexOf(']') === -1) {
+                                text += _tmp + ' ';
                             } else {
-                                args.push(_tmp.replace(',', ''));
+                                text += _tmp.substr(0, _tmp.indexOf(']'));
+                                iterator.next(_tmp.substr(1 + _tmp.indexOf(']')));
                             }
                         } while (_tmp.indexOf(']') === -1);
+
+                        args = text.split(',').map(function (arg) {
+                            return arg.trim();
+                        });
                     } else word = word.substr(0, word.length - 1);
 
                     // add to list
@@ -333,9 +335,9 @@ var punc = ['.', ',', '!', '?'],
         var tpl = pennyworth.parse(pennyworth.lex(text)).map(function (array) {
             return (0, _underscore.flatten)(array);
         }),
-            classifier = new _natural.BayesClassifier();
+            classifier = new _natural.LogisticRegressionClassifier();
 
-        if (tpl.length > 1) {
+        if (tpl.length !== 0) {
             // load the classifier
             pennyworth.flatten(tpl).forEach(function (text, index) {
                 return classifier.addDocument(text, String(index));
@@ -384,7 +386,6 @@ var punc = ['.', ',', '!', '?'],
                     data = data.substr(prev + next);
                 }
             }
-
             // return our created scope
             return scope;
         };
@@ -394,3 +395,4 @@ var punc = ['.', ',', '!', '?'],
 // export
 exports['default'] = pennyworth;
 module.exports = exports['default'];
+//# sourceMappingURL=pennyworth-dist.js.map
