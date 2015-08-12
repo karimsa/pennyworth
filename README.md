@@ -1,6 +1,8 @@
 # pennyworth [![Build Status](https://magnum.travis-ci.com/karimsa/pennyworth.svg?token=bynzkcTP4XciV8soPs5e&branch=master)](https://magnum.travis-ci.com/karimsa/pennyworth)
 
-a natural language templating engine for alfred.
+a natural language templating engine for [alfred](https://github.com/karimsa/alfred).
+
+[![NPM](https://nodei.co/npm/pennyworth.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/pennyworth/)
 
 ## usage
 
