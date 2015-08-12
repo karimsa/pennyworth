@@ -10,16 +10,21 @@ import gulp from 'gulp';
 import babel from 'gulp-babel';
 import mocha from 'gulp-mocha';
 import rename from 'gulp-rename';
+import sourcemaps from 'gulp-sourcemaps';
 
 gulp.task('default', () =>
 	gulp.src('pennyworth.js')
-		.pipe(babel())
-		.pipe(rename('pennyworth-dist.js'))
+		.pipe(sourcemaps.init())
+			.pipe(babel())
+			.pipe(rename('pennyworth-dist.js'))
+		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest('.'))
 );
 
 gulp.task('test', ['default'], () =>
 	gulp.src('test/test-pennyworth.js')
 		.pipe(babel())
-		.pipe(mocha())
+		.pipe(mocha({
+			reporter: 'nyan'
+		}))
 );
