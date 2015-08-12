@@ -25,6 +25,6 @@ gulp.task('test', ['default'], () =>
 	gulp.src('test/test-pennyworth.js')
 		.pipe(babel())
 		.pipe(mocha({
-			reporter: 'nyan'
+			reporter: process.env.REPORTER || 'nyan'
 		}))
 );
