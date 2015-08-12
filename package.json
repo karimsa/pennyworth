@@ -4,14 +4,13 @@
   "description": "a natural language templating engine for alfred",
   "main": "pennyworth-dist.js",
   "dependencies": {
-    "babel": "^5.8.19",
     "natural": "^0.2.1",
     "underscore": "^1.8.3"
   },
   "scripts": {
     "test": "gulp test && npm run coverage",
-    "coverage": "istanbul cover --lcov-only node_modules/.bin/_mocha -- --require babel/register test/test-pennyworth.js",
-    "debug": "gulp && mocha --debug-brk -R spec --require babel/register test/test-pennyworth.js"
+    "coverage": "istanbul cover --lcov-only node_modules/.bin/_mocha -- test/test-debug.js",
+    "debug": "gulp && mocha --debug-brk -R spec test/test-debug.js"
   },
   "repository": {
     "type": "git",
@@ -29,7 +28,7 @@
   },
   "homepage": "https://github.com/karimsa/pennyworth#readme",
   "devDependencies": {
-    "babel-core": "^5.8.19",
+    "babel": "^5.8.19",
     "gulp": "^3.9.0",
     "gulp-babel": "^5.1.0",
     "gulp-mocha": "^2.1.3",
