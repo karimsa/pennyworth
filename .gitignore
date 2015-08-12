@@ -1,2 +1,5 @@
+.settings
+coverage
 node_modules
 *.log
+test.js
