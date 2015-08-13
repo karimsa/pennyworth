@@ -112,6 +112,8 @@ var punc = ['.', ',', '!', '?'],
             iterator = split(template);
 
         var _iteratorNormalCompletion2 = true;
+
+        // add remaining text
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
 
@@ -242,6 +244,7 @@ var punc = ['.', ',', '!', '?'],
                                     });
 
                                     c = '';
+                                    tmp = '';
                                 }
 
                                 tokens.push({
