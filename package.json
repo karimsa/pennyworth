@@ -12,7 +12,7 @@
     "test": "gulp test && npm run coverage && npm run codeclimate && npm run rm",
     "coverage": "istanbul cover --lcov-only node_modules/.bin/_mocha -- test/test-debug.js",
     "debug": "gulp && mocha --debug-brk -R spec test/test-debug.js",
-    "codeclimate": "cat coverage/lcov.info | codeclimate",
+    "codeclimate": "cat coverage/lcov.info | codeclimate-test-reporter",
     "rm": "rimraf coverage"
   },
   "repository": {
