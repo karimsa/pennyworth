@@ -360,16 +360,23 @@ var punc = ['.', ',', '!', '?'],
             .forEach(function (text, index) {
                 return classifier.addDocument(text, String(index));
             });
+        }
 
-            // train the classifier
-            classifier.train();
-        } else {
+        // polyfill the classifier if it is unusable
+        if (classifier.docs.length === 0) {
             classifier = {
                 classify: function classify() {
                     return '0';
+                },
+
+                train: function train() {
+                    return false;
                 }
             };
         }
+
+        // train the classifier
+        classifier.train();
 
         return function (data) {
             // clean up apostrophes for input as well

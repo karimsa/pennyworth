@@ -248,16 +248,23 @@ var punc = ['.', ',', '!', '?'],
 
                     // add each flattened command as a document
                     .forEach((text, index) => classifier.addDocument(text, String(index)));
+            }
 
-                // train the classifier
-                classifier.train();
-            } else {
+            // polyfill the classifier if it is unusable
+            if (classifier.docs.length === 0) {
                 classifier = {
                     classify () {
                         return '0';
+                    },
+
+                    train () {
+                      return false;
                     }
                 };
             }
+
+            // train the classifier
+            classifier.train();
 
             return (data) => {
                 // clean up apostrophes for input as well
