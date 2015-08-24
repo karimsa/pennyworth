@@ -294,11 +294,20 @@ var punc = ['.', ',', '!', '?'],
                         else next = data.indexOf(lex[i + 1].value, prev) - prev;
 
                         // grab data
-                        scope[lex[i].value] =
-                            data
-                                .substr(prev, next)
-                                .replace(new RegExp('[' + punc.join('') + ']', 'g'), '')
-                                .trim();
+                        scope[lex[i].value] = data.substr(prev, next).trim();
+
+                        // remove leading punctuation
+                        if (punc.indexOf(scope[lex[i].value].charAt(0)) !== -1) {
+                          scope[lex[i].value] = scope[lex[i].value].substr(1);
+                        }
+
+                        // remove trailing punctuation
+                        if (punc.indexOf(scope[lex[i].value].charAt(scope[lex[i].value].length - 1)) !== -1) {
+                          scope[lex[i].value] = scope[lex[i].value].substr(0, scope[lex[i].value].length - 1);
+                        }
+
+                        // remove leading/trailing whitespace
+                        scope[lex[i].value] = scope[lex[i].value].trim();
 
                         // apply the filter
                         scope[lex[i].value] = pennyworth.filter(lex[i].filter, scope[lex[i].value]);
