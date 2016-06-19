@@ -8,11 +8,16 @@ a natural language templating engine
 
 ```javascript
 // build a template from a template string
-var template = pennyworth.template('my beautiful template.');
+var template = pennyworth.template('my $adjective template.');
 
 // the template is a function that can be called with data at
 // any time and multiple times
-var compiled = template('my input string.');
+template('my beautiful template').then(function (compiled) {
+	// it will always return a promise to allow support for
+	// asynchronous filters
+
+	console.log(compiled); // { adjective : 'beautiful' }
+});
 ```
 
 ## spec
@@ -53,6 +58,15 @@ pennyworth.filter('my-new-filter', function ( input ) {
 var template = pennyworth.template('hello, $who:my-new-filter.');
 template('hello, alfred.').who === 'alfred!'; // true
 ```
+
+For asynchronous filters, grab a callback using this.async():
+
+```javascript
+pennyworth.filter('async', function ( input ) {
+	let done = this.async();
+	done( error , filtered );
+});
+``` 
 
 ## named entities
 
