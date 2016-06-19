@@ -1,6 +1,6 @@
 # pennyworth [![Build Status](https://travis-ci.org/karimsa/pennyworth.svg)](https://travis-ci.org/karimsa/pennyworth)
 
-a natural language templating engine for [alfred](https://github.com/karimsa/alfred).
+a natural language templating engine
 
 [![NPM](https://nodei.co/npm/pennyworth.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/pennyworth/)
 

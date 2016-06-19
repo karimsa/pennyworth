@@ -1,17 +1,17 @@
 /**
  * pennyworth.js
  * a natural language templating engine.
+ * 
  * Licensed under GPL-3.0.
  * Copyright (C) 2015 Karim Alibhai.
  */
 
 'use strict';
 
-import 'babel/polyfill';
-import { flatten } from 'underscore';
-import { LogisticRegressionClassifier } from 'natural';
+const { flatten } = require('underscore');
+const { LogisticRegressionClassifier } = require('natural');
 
-var punc = ['.', ',', '!', '?'],
+const punc = ['.', ',', '!', '?'],
     split = function*(text) {
         var tmp;
         for (var word of text.split(/\s+/g)) {
@@ -324,4 +324,4 @@ var punc = ['.', ',', '!', '?'],
     };
 
 // export
-export default pennyworth;
+module.exports = pennyworth;

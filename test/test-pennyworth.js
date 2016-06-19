@@ -6,11 +6,11 @@
 
 'use strict';
 
-import 'mocha';
-import 'should';
+const mocha = require('mocha');
+const should = require('should');
 
 var pennyworth;
-beforeEach(() => pennyworth = require('../pennyworth-dist'));
+beforeEach(() => pennyworth = require('../'));
 
 describe('test variable support', () => {
 	describe('try regular end-of-line variable', () => {
