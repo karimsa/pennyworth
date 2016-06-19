@@ -83,6 +83,7 @@ if you use the filter 'person', the output will be "Alfred Pennyworth".
 ### directives
 
 **`...`: expansion directive**
+**`?`: conditional directive**
 
 template: `[... hello, hey, hi], $who.`
 
