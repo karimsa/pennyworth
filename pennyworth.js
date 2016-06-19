@@ -191,6 +191,9 @@ const punc = ['.', ',', '!', '?'],
             for (var i = 0; i < lex.length; i += 1) {
                 if (lex[i].type === 'directive') {
                     tmp = pennyworth.directive(lex[i].value, lex[i].args);
+                    if (!(tmp instanceof Array)) tmp = [tmp];
+                    tmp = tmp.map((text) => pennyworth.lex(text));
+
                     return arrayOf(tmp.length).map((nil, index) =>
                         pennyworth.parse(lex.slice(0, i).concat(tmp[index], lex.slice(i + 1)))
                     );
@@ -211,12 +214,7 @@ const punc = ['.', ',', '!', '?'],
         },
 
         _directives: {
-            '...': (args) => args.map((text) => {
-                return {
-                    type: 'text',
-                    value: text
-                };
-             })
+            '...': (args) => args
         },
 
         directive: (name, options) => {
