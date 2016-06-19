@@ -14,7 +14,8 @@
     "debug": "mocha --debug-brk -R spec test/test-pennyworth.js",
     "codeclimate": "cat coverage/lcov.info | codeclimate-test-reporter",
     "rm": "rimraf coverage ner",
-    "postinstall": "npm run download && npm run extract && mv stanford-ner-2015-12-09 ner",
+    "postinstall": "node -e 'require(\"fs\").existsSync(\"ner\")||require(\"child_process\").exec(\"npm run get-ner\").stdout.pipe(process.stdout)'",
+    "get-ner": "npm run download && npm run extract && mv stanford-ner-2015-12-09 ner",
     "download": "curl http://nlp.stanford.edu/software/stanford-ner-2015-12-09.zip > ner.zip",
     "extract": "unzip ner.zip && rm ner.zip"
   },
