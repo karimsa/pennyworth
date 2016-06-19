@@ -92,12 +92,11 @@ Adding a new directive:
 
 ```javascript
 pennyworth.directive('greetings', function (args) {
-	return ['hey', 'hi', 'hello'].map(function (greeting) {
-		return {
-			type: 'text',
-			value: greeting
-		};
-	});
+	// the function of a directive is to expand into a more complex
+	// pennyworth template string
+	// therefore, you must return either a pennyworth string or a list
+	// of pennyworth strings
+	return ['hey', 'hi', 'hello'];
 });
 
 var template = pennyworth.template('[greetings], $who.');
