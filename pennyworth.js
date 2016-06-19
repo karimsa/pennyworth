@@ -192,7 +192,7 @@ const punc = ['.', ',', '!', '?'],
                 if (lex[i].type === 'directive') {
                     tmp = pennyworth.directive(lex[i].value, lex[i].args);
                     if (!(tmp instanceof Array)) tmp = [tmp];
-                    tmp = tmp.map((text) => pennyworth.lex(text));
+                    tmp = tmp.map((text) => pennyworth.lex(text).filter((lex) => lex.value !== ''));
 
                     return arrayOf(tmp.length).map((nil, index) =>
                         pennyworth.parse(lex.slice(0, i).concat(tmp[index], lex.slice(i + 1)))
