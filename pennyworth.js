@@ -214,7 +214,8 @@ const punc = ['.', ',', '!', '?'],
         },
 
         _directives: {
-            '...': (args) => args
+            '...': (args) => args,
+            '?': (args) => args.concat([''])
         },
 
         directive: (name, options) => {
