@@ -5,6 +5,7 @@
   "main": "pennyworth.js",
   "dependencies": {
     "natural": "^0.4.0",
+    "tmp": "0.0.28",
     "underscore": "^1.8.3"
   },
   "scripts": {
@@ -12,7 +13,10 @@
     "coverage": "istanbul cover --lcov-only node_modules/.bin/_mocha -- test/test-pennyworth.js",
     "debug": "mocha --debug-brk -R spec test/test-pennyworth.js",
     "codeclimate": "cat coverage/lcov.info | codeclimate-test-reporter",
-    "rm": "rimraf coverage"
+    "rm": "rimraf coverage ner",
+    "postinstall": "npm run download && npm run extract && mv stanford-ner-2015-12-09 ner",
+    "download": "curl http://nlp.stanford.edu/software/stanford-ner-2015-12-09.zip > ner.zip",
+    "extract": "unzip ner.zip && rm ner.zip"
   },
   "repository": {
     "type": "git",

@@ -11,6 +11,9 @@
 const { flatten } = require('underscore');
 const { LogisticRegressionClassifier } = require('natural');
 
+const ner = require('./ner');
+const entities = [ 'location', 'person', 'organization', 'money', 'percent', 'date', 'time' ];
+
 const punc = ['.', ',', '!', '?'],
     split = function*(text) {
         var tmp;
@@ -227,9 +230,8 @@ const punc = ['.', ',', '!', '?'],
             'float': (text) => parseFloat(text)
         },
 
-        filter: (name, options) => {
-            if (typeof options === 'function') pennyworth._filters[name] = options;
-            else return (pennyworth._filters[name] || ((arg) => arg)).call(null, options);
+        filter: (name, callback) => {
+            if (typeof callback === 'function') pennyworth._filters[name] = callback;
         },
 
         template: (text) => {
@@ -267,61 +269,104 @@ const punc = ['.', ',', '!', '?'],
             classifier.train();
 
             return (data) => {
-                // clean up apostrophes for input as well
-                data = data.split('\'').join('');
+                return new Promise((resolve, reject) => {
+                    var i;
 
-                // get appropriate text
-                var index = parseInt(classifier.classify(data), 10);
+                    // clean up apostrophes for input as well
+                    data = data.split('\'').join('');
 
-                // grab appropriate lex
-                var lex = tpl[index]
-                            .filter((token) => token.type !== 'punctuation');
+                    // get appropriate text
+                    var index = parseInt(classifier.classify(data), 10);
 
-                // create a scope to store data
-                var scope = {};
+                    // grab appropriate lex
+                    var lex = tpl[index]
+                                .filter((token) => token.type !== 'punctuation');
 
-                // parse out variables
-                for (var i = 0; i < lex.length; i += 1) {
-                    if (lex[i].type === 'variable') {
-                        // grab previous index
-                        var prev;
-                        if (i === 0) prev = 0;
-                        else prev = data.indexOf(lex[i - 1].value) + lex[i - 1].value.length;
+                    // create a scope to store data
+                    var scope = {};
 
-                        // grab next index
-                        var next;
-                        if (i === (lex.length - 1)) next = data.length;
-                        else next = data.indexOf(lex[i + 1].value, prev) - prev;
+                    // parse out variables
+                    for (i = 0; i < lex.length; i += 1) {
+                        if (lex[i].type === 'variable') {
+                            // grab previous index
+                            var prev;
+                            if (i === 0) prev = 0;
+                            else prev = data.indexOf(lex[i - 1].value) + lex[i - 1].value.length;
 
-                        // grab data
-                        scope[lex[i].value] = data.substr(prev, next).trim();
+                            // grab next index
+                            var next;
+                            if (i === (lex.length - 1)) next = data.length;
+                            else next = data.indexOf(lex[i + 1].value, prev) - prev;
 
-                        // remove leading punctuation
-                        if (punc.indexOf(scope[lex[i].value].charAt(0)) !== -1) {
-                          scope[lex[i].value] = scope[lex[i].value].substr(1);
+                            // grab data
+                            scope[lex[i].value] = data.substr(prev, next).trim();
+
+                            // remove leading punctuation
+                            if (punc.indexOf(scope[lex[i].value].charAt(0)) !== -1) {
+                              scope[lex[i].value] = scope[lex[i].value].substr(1);
+                            }
+
+                            // remove trailing punctuation
+                            if (punc.indexOf(scope[lex[i].value].charAt(scope[lex[i].value].length - 1)) !== -1) {
+                              scope[lex[i].value] = scope[lex[i].value].substr(0, scope[lex[i].value].length - 1);
+                            }
+
+                            // remove leading/trailing whitespace
+                            scope[lex[i].value] = scope[lex[i].value].trim();
+
+                            // clean up data
+                            data = data.substr(prev + next);
                         }
-
-                        // remove trailing punctuation
-                        if (punc.indexOf(scope[lex[i].value].charAt(scope[lex[i].value].length - 1)) !== -1) {
-                          scope[lex[i].value] = scope[lex[i].value].substr(0, scope[lex[i].value].length - 1);
-                        }
-
-                        // remove leading/trailing whitespace
-                        scope[lex[i].value] = scope[lex[i].value].trim();
-
-                        // apply the filter
-                        scope[lex[i].value] = pennyworth.filter(lex[i].filter, scope[lex[i].value]);
-
-                        // clean up data
-                        data = data.substr(prev + next);
                     }
-                }
 
-                // return our created scope
-                return scope;
+                    // apply filters
+                    i = -1;
+                    var apply = function () {
+                        i += 1;
+
+                        if (i === lex.length) resolve(scope);
+                        else if ('filter' in lex[i]) {
+                            let filter = pennyworth._filters[ lex[i].filter ];
+                            if (!filter) return apply();
+
+                            let ret = filter.call({
+                                async: function () {
+                                    return function (err, val) {
+                                        if (err) throw err;
+
+                                        scope[ lex[i].value ] = val;
+                                        apply();
+                                    };
+                                }
+                            }, scope[lex[i].value]);
+
+                            if (ret !== undefined) {
+                                scope[ lex[i].value ] = ret;
+                                apply();
+                            }
+                        }
+                        else apply();
+                    };
+
+                    apply();
+                });
             };
         }
     };
+
+// add all entities as filters
+for (let entity of entities) {
+    pennyworth.filter(entity, function ( data ) {
+        const done = this.async();
+        ner( data ).then((entities) => {
+            done(null,
+                entities.filter((res) => res[1] === entity)
+                        .map((res) => res[0])
+                        .join(' ')
+            );
+        }, done);
+    });
+}
 
 // export
 module.exports = pennyworth;

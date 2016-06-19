@@ -54,6 +54,18 @@ var template = pennyworth.template('hello, $who:my-new-filter.');
 template('hello, alfred.').who === 'alfred!'; // true
 ```
 
+## named entities
+
+pennyworth uses the Stanford NER for named entity filters.
+
+*Supported filters (from the 7 class model): Location, Person, Organization, Money, Percent, Date, Time*
+
+To use any, just use the entity type as the filter name:
+
+For instance, for the input string `My name is Alfred Pennyworth not Wayne Mansion.`, if you use the filter
+'string': `My name is $name:string` then the resolved name will be "Alfred Pennyworth not Wayne Mansion". But
+if you use the filter 'person', the output will be "Alfred Pennyworth".
+
 ### directives
 
 **`...`: expansion directive**
