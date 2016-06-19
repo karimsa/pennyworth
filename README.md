@@ -37,11 +37,11 @@ template: `i am $x years old.`
 
 - for `i am 18 years old.` => $x = "18"
 
-template: `i am $x:number years old.`
+template: `i am $x:int years old.`
 
 - for `i am 18 years old` => $x = 18
 
-*Supported filters: string, integer, float, word.*
+*Supported filters: string, int, float, word.*
 
 Adding a new filter:
 
