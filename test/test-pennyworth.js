@@ -17,13 +17,19 @@ describe('test variable support', () => {
 		it('should grab "alfred" from "hey, alfred"', () =>
 			pennyworth
 				.template('hey, $subject.')('hey alfred')
-				.subject.should.equal('alfred')
+				.then((res) => res.subject.should.equal('alfred'))
+				.catch((err) => {
+					throw err;
+				})
 		);
 
 		it('should grab rest of line from "hey, randomness and more randomness"', () =>
 			pennyworth
 				.template('hey, $text')('hey, randomness and more randomness')
-				.text.should.equal('randomness and more randomness')
+				.then((res) => res.text.should.equal('randomness and more randomness'))
+				.catch((err) => {
+					throw err;
+				})
 		);
 	});
 
@@ -31,13 +37,19 @@ describe('test variable support', () => {
 		it('should grab "alfred" from "hey, alfred, how are you?"', () =>
 			pennyworth
 				.template('hey, $who, how are you?')('hi, alfred, how are you')
-				.who.should.equal('alfred')
+				.then((res) => res.who.should.equal('alfred'))
+				.catch((err) => {
+					throw err;
+				})
 		);
 
 		it('should grab "alfred and bruce" from "hey, alfred and bruce, how are you?"', () =>
 			pennyworth
 				.template('hey, $who, how are you?')('hey, alfred and bruce, how are you?')
-				.who.should.equal('alfred and bruce')
+				.then((res) => res.who.should.equal('alfred and bruce'))
+				.catch((err) => {
+					throw err;
+				})
 		);
 	});
 });
@@ -47,25 +59,36 @@ describe('test directive support', () => {
 		it('should not match unexpanded list', () =>
 			pennyworth
 				.template('hi $who')('hey alfred')
-				.who.should.not.equal('alfred')
+				.then((res) => res.who.should.not.equal('alfred'))
+				.catch((err) => {
+					throw err;
+				})
 		);
 
 		it('should expand simple list', () =>
 			pennyworth
 				.template('[... hi, hey] $who')('hey alfred')
-				.who.should.equal('alfred')
+				.then((res) => res.who.should.equal('alfred'))
+				.catch((err) => {
+					throw err;
+				})
 		);
 
 		it('should log some info', () =>
-			pennyworth.template('hi, $subject. [... how are you, what\'s up]?')
-				('hi, alfred. what\'s up?')
-				.subject.should.equal('alfred')
+			pennyworth.template('hi, $subject. [... how are you, what\'s up]?')('hi, alfred. what\'s up?')
+				.then((res) => res.subject.should.equal('alfred'))
+				.catch((err) => {
+					throw err;
+				})
 		);
 
 		it('should expand list after some text', () =>
 			pennyworth
 				.template('hi, $subject. [... how are you, what\'s up]?')('hi, alfred. what\'s up?')
-				.subject.should.equal('alfred')
+				.then((res) => res.subject.should.equal('alfred'))
+				.catch((err) => {
+					throw err;
+				})
 		);
 	});
 
