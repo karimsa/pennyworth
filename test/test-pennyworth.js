@@ -95,14 +95,7 @@ describe('test directive support', () => {
 	describe('try custom directive', () => {
 		it('should expand to a list of greetings', () => {
 			// define directive
-			pennyworth.directive('greetings', () =>
-				['hey', 'hi', 'hello'].map((greeting) => {
-					return {
-						type: 'text',
-						value: greeting
-					}
-				})
-			);
+			pennyworth.directive('greetings', () => ['hey', 'hi', 'hello']);
 
 			// flatten is an internal method that
 			// simplifies parsed lex to be used in
