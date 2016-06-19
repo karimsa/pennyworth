@@ -1,4 +1,5 @@
 ner
 coverage
 node_modules
-*.log
+*.log*
+ner.zip
