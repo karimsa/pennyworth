@@ -4,6 +4,7 @@
   "description": "a natural language templating engine",
   "main": "index.js",
   "dependencies": {
+    "extract-brackets": "0.0.7",
     "natural": "^0.4.0",
     "tmp": "0.0.28",
     "underscore": "^1.8.3"

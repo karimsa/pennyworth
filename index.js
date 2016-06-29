@@ -11,7 +11,7 @@
 const { flatten } = require('underscore');
 const { LogisticRegressionClassifier } = require('natural');
 
-const ner = require('./ner');
+const ner = require('./lib/ner');
 const entities = [ 'location', 'person', 'organization', 'money', 'percent', 'date', 'time' ];
 
 const punc = ['.', ',', '!', '?'],
@@ -32,176 +32,8 @@ const punc = ['.', ',', '!', '?'],
         return tmp;
     },
     pennyworth = {
-        lex: (template) => {
-            var tokens = [],
-                tmp = '',
-                iterator = split(template);
-
-            for (var word of iterator) {
-                if (word[0] === '$') {
-                    // add the text so far
-                    if (tmp) {
-                        tokens.push({
-                            type: 'text',
-                            value: tmp.trim()
-                        });
-
-                        tmp = '';
-                    }
-
-                    // trim off variable symbol
-                    word = word.substr(1);
-
-                    // look for punctuation
-                    var m = word.match(new RegExp('[' + punc.join('') + ']', 'g'));
-                    if (m) {
-                        // grab matched punctuation
-                        m = m[0];
-
-                        // trim till there
-                        var _tmp = word.substr(word.indexOf(m));
-                        word = word.substr(0, word.indexOf(m));
-
-                        // ask iterator for a redo
-                        iterator.next(_tmp);
-                    }
-
-                    // split by name and filter
-                    word = word.split(':');
-
-                    // push to token list
-                    tokens.push({
-                        type: 'variable',
-
-                        // name always comes first
-                        value: word[0],
-
-                        // default filter is string
-                        filter: word[1] || 'string'
-                    });
-                } else if (word[0] === '[') {
-                    // add the text so far
-                    if (tmp) {
-                        tokens.push({
-                            type: 'text',
-                            value: tmp.trim()
-                        });
-
-                        tmp = '';
-                    }
-
-                    // directive name
-                    word = word.substr(1);
-
-                    // see if more than just brackets
-                    if (word.indexOf(']') !== -1) {
-                        iterator.next(word.substr(1 + word.indexOf(']')));
-                        word = word.substr(0, word.indexOf(']'));
-                    }
-
-                    if (word[word.length - 1] !== ']') {
-                      // create arguments list
-                      var args = [],
-                          _tmp,
-                          text = '';
-
-                        do {
-                            _tmp = iterator.next().value;
-                            if (!_tmp) break;
-
-                            if (_tmp.indexOf(']') === -1) {
-                                text += _tmp + ' ';
-                            } else {
-                                text += _tmp.substr(0, _tmp.indexOf(']'));
-
-                                if (_tmp.substr(1 + _tmp.indexOf(']'))) {
-                                  iterator.next(_tmp.substr(1 + _tmp.indexOf(']')));
-                                }
-                            }
-                        } while (_tmp.indexOf(']') === -1);
-
-                        args = text.split(',').map((arg) => arg.trim());
-                    } else word = word.substr(0, word.length - 1);
-
-                    // add to list
-                    tokens.push({
-                        type: 'directive',
-                        value: word,
-                        args: args
-                    });
-                } else if (punc.indexOf(word) !== -1) {
-                    // add the text so far
-                    if (tmp) {
-                        tokens.push({
-                            type: 'text',
-                            value: tmp.trim()
-                        });
-
-                        tmp = '';
-                    }
-
-                    tokens.push({
-                        type: 'punctuation',
-                        value: word
-                    });
-                } else {
-                    if (word.match(/[\.,!\?]/g)) {
-                        var c = '';
-
-                        for (var i = 0; i < word.length; i += 1) {
-                            if (punc.indexOf(word[i]) === -1) {
-                                c += word[i];
-                            } else {
-                                if (c) {
-                                    tokens.push({
-                                        type: 'text',
-                                        value: [tmp.trim(), c.trim()].join(' ').trim()
-                                    });
-
-                                    c = '';
-                                    tmp = '';
-                                }
-
-                                tokens.push({
-                                    type: 'punctuation',
-                                    value: word[i]
-                                });
-                            }
-                        }
-                    } else {
-                        tmp += word + ' ';
-                    }
-                }
-            }
-
-            // add remaining text
-            if (tmp) {
-                tokens.push({
-                    type: 'text',
-                    value: tmp.trim()
-                });
-            }
-
-            return tokens;
-        },
-
-        parse: (lex) => {
-            var tmp;
-
-            for (var i = 0; i < lex.length; i += 1) {
-                if (lex[i].type === 'directive') {
-                    tmp = pennyworth.directive(lex[i].value, lex[i].args);
-                    if (!(tmp instanceof Array)) tmp = [tmp];
-                    tmp = tmp.map((text) => pennyworth.lex(text).filter((lex) => lex.value !== ''));
-
-                    return arrayOf(tmp.length).map((nil, index) =>
-                        pennyworth.parse(lex.slice(0, i).concat(tmp[index], lex.slice(i + 1)))
-                    );
-                }
-            }
-
-            return [lex];
-        },
+        lex: require('./lib/lexer'),
+        parse: require('./lib/parser'),
 
         flatten: (lex) => {
             return lex.map((_lex) =>
@@ -211,16 +43,6 @@ const punc = ['.', ',', '!', '?'],
                     .join(' ')
                     .trim()
             );
-        },
-
-        _directives: {
-            '...': (args) => args,
-            '?': (args) => args.concat([''])
-        },
-
-        directive: (name, options) => {
-            if (typeof options === 'function') pennyworth._directives[name] = options;
-            else return (pennyworth._directives[name] || ((arg) => arg)).call(null, options);
         },
 
         _filters: {
