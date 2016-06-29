@@ -80,26 +80,19 @@ For instance, for the input string `My name is Alfred Pennyworth not Wayne Mansi
 'string': `My name is $name:string` then the resolved name will be "Alfred Pennyworth not Wayne Mansion". But
 if you use the filter 'person', the output will be "Alfred Pennyworth".
 
-### directives
+## expander
 
-**`...`: expansion directive**
-**`?`: conditional directive**
+to expand a set of arguments, use curly braces:
 
-template: `[... hello, hey, hi], $who.`
+ - `{hey, hi, hello}, there` will expand to:
+  - hey, there.
+  - hi, there.
+  - hello, there.
 
-*expands to `hello, $who`, `hey, $who`, and `hi, $who`*
+## conditional
 
-Adding a new directive:
+to make a part of the expansion conditional, use a question mark:
 
-```javascript
-pennyworth.directive('greetings', function (args) {
-	// the function of a directive is to expand into a more complex
-	// pennyworth template string
-	// therefore, you must return either a pennyworth string or a list
-	// of pennyworth strings
-	return ['hey', 'hi', 'hello'];
-});
-
-var template = pennyworth.template('[greetings], $who.');
-template('hi, alfred').who === 'alfred'; // true
-```
+ - `i am $age {years?}` expands to:
+  - i am $age
+  - i am $age years
